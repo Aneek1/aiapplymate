@@ -1,0 +1,206 @@
+const express = require('express');
+const router = express.Router();
+const { User } = require('../models');
+const { generateToken } = require('../utils/jwt');
+const { successResponse, errorResponse } = require('../utils/response');
+const { protect } = require('../middleware/auth');
+const {
+  registerValidator,
+  loginValidator,
+  handleValidationErrors,
+} = require('../middleware/validator');
+
+// @route   POST /api/auth/register
+// @desc    Register new user
+// @access  Public
+router.post('/register', registerValidator, handleValidationErrors, async (req, res, next) => {
+  try {
+    const { email, password, firstName, lastName, phone } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return errorResponse(res, 'User already exists with this email', 400);
+    }
+
+    // Create new user
+    const user = await User.create({
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+    });
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Return user data (without password)
+    successResponse(
+      res,
+      {
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          subscription: user.subscription,
+        },
+        token,
+      },
+      'User registered successfully',
+      201
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   POST /api/auth/login
+// @desc    Login user
+// @access  Public
+router.post('/login', loginValidator, handleValidationErrors, async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user with password
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return errorResponse(res, 'Invalid credentials', 401);
+    }
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return errorResponse(res, 'Invalid credentials', 401);
+    }
+
+    // Update last login
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        subscription: user.subscription,
+        stats: user.stats,
+      },
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   GET /api/auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', protect, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        phone: user.phone,
+        location: user.location,
+        linkedinUrl: user.linkedinUrl,
+        portfolioUrl: user.portfolioUrl,
+        headline: user.headline,
+        summary: user.summary,
+        subscription: user.subscription,
+        stats: user.stats,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   PUT /api/auth/me
+// @desc    Update current user
+// @access  Private
+router.put('/me', protect, async (req, res, next) => {
+  try {
+    const allowedUpdates = [
+      'firstName',
+      'lastName',
+      'phone',
+      'location',
+      'linkedinUrl',
+      'portfolioUrl',
+      'headline',
+      'summary',
+    ];
+
+    const updates = {};
+    Object.keys(req.body).forEach((key) => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        phone: user.phone,
+        location: user.location,
+        linkedinUrl: user.linkedinUrl,
+        portfolioUrl: user.portfolioUrl,
+        headline: user.headline,
+        summary: user.summary,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   POST /api/auth/change-password
+// @desc    Change password
+// @access  Private
+router.post('/change-password', protect, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user.id).select('+password');
+
+    // Verify current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return errorResponse(res, 'Current password is incorrect', 400);
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    successResponse(res, null, 'Password changed successfully');
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;
