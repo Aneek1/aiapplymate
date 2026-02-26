@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,6 +35,10 @@ const ApplicationsPage = () => {
   };
 
   const downloadPDF = async (app: any, type: 'resume' | 'cover-letter') => {
+    const downloadKey = `${app._id}-${type}`;
+    if (downloadingId === downloadKey) return;
+
+    setDownloadingId(downloadKey);
     try {
       const payload = type === 'resume'
         ? {
@@ -67,17 +72,35 @@ const ApplicationsPage = () => {
         ? await resumeAPI.downloadTailoredResume(payload)
         : await resumeAPI.downloadCoverLetter(payload);
 
+      // Verify the blob is actually a PDF or at least has content
+      if (blob.size < 100) {
+        throw new Error('Received an invalid or empty file from the server');
+      }
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${type}-${app.name.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+
+      // Clean filename
+      const safeName = app.name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      link.setAttribute('download', `${type}-${safeName}.pdf`);
+
       document.body.appendChild(link);
       link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+
+      // Delay removal and revocation to ensure the browser captures the download
+      // Mac/Chrome sometimes need a larger window for the intent
+      setTimeout(() => {
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      }, 5000);
+
+      toast.success(`${type === 'resume' ? 'Resume' : 'Cover Letter'} download started! Check your downloads.`);
     } catch (err) {
       console.error('Download error:', err);
-      toast.error('Failed to download PDF');
+      toast.error('Failed to download PDF. Please try again.');
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -118,10 +141,10 @@ const ApplicationsPage = () => {
                 <div className="p-3 bg-emerald-50 rounded-xl group-hover:bg-emerald-600 transition-colors duration-300">
                   <CheckCircle2 className="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors duration-300" />
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">{app.name}</h3>
-                  <p className="text-slate-600 font-medium flex items-center gap-2 mt-1">
-                    <Building2 className="w-4 h-4 text-emerald-600" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate">{app.name}</h3>
+                  <p className="text-slate-600 font-medium flex items-center gap-2 mt-1 truncate">
+                    <Building2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                     {app.headline || 'General Optimization'}
                   </p>
                   <div className="flex items-center gap-4 mt-3 text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -137,7 +160,7 @@ const ApplicationsPage = () => {
               </div>
 
               <div className="flex items-center gap-8">
-                <div className="text-right">
+                <div className="text-right hidden sm:block">
                   <div className="flex items-center gap-2 justify-end">
                     <span className="text-2xl font-extrabold text-emerald-600">{app.atsScore || 0}%</span>
                   </div>
@@ -148,15 +171,25 @@ const ApplicationsPage = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => downloadPDF(app, 'resume')}
-                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all"
+                      disabled={downloadingId !== null}
+                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all flex items-center gap-2"
                     >
-                      Resume PDF
+                      {downloadingId === `${app._id}-resume` ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        "Resume PDF"
+                      )}
                     </button>
                     <button
                       onClick={() => downloadPDF(app, 'cover-letter')}
-                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all"
+                      disabled={downloadingId !== null}
+                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all flex items-center gap-2"
                     >
-                      Cover Letter
+                      {downloadingId === `${app._id}-cover-letter` ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        "Cover Letter"
+                      )}
                     </button>
                   </div>
                   <button className="text-slate-400 text-xs font-bold flex items-center gap-1 hover:text-emerald-600 transition-all">

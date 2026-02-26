@@ -71,3 +71,9 @@ Please retry in 24.202316702s. [{"@type":"type.googleapis.com/google.rpc.Help","
 [0mGET /api/resumes [36m304[0m 2.467 ms - -[0m
 [0mPOST /api/gemini/download-tailored-resume [32m200[0m 3016.969 ms - 748926[0m
 [0mPOST /api/gemini/download-cover-letter [32m200[0m 1394.291 ms - 679840[0m
+[0mPOST /api/gemini/download-tailored-resume [32m200[0m 2993.625 ms - 748926[0m
+[0mGET /api/resumes [36m304[0m 2.639 ms - -[0m
+[0mGET /api/resumes [36m304[0m 1.902 ms - -[0m
+[0mPOST /api/gemini/download-tailored-resume [32m200[0m 2930.049 ms - 748926[0m
+[0mGET /api/auth/me [36m304[0m 2.924 ms - -[0m
+[0mPOST /api/gemini/download-tailored-resume [32m200[0m 1362.728 ms - 748926[0m
