@@ -90,12 +90,14 @@ const resumeSchema = new mongoose.Schema({
     jobTitle: String,
     date: Date,
   }],
+  content: String,
+  coverLetter: String,
 }, {
   timestamps: true,
 });
 
 // Ensure only one default resume per user
-resumeSchema.pre('save', async function(next) {
+resumeSchema.pre('save', async function (next) {
   if (this.isDefault) {
     await this.constructor.updateMany(
       { user: this.user, _id: { $ne: this._id } },

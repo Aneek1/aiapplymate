@@ -101,9 +101,13 @@ const Dashboard = () => {
     try {
       await resumeAPI.saveTailored({
         ...result,
+        coverLetter: result?.coverLetter,
         jobTitle: formData.jobTitle,
         company: formData.company,
-        name: `Tailored: ${formData.jobTitle} at ${formData.company}`
+        name: `Tailored: ${formData.jobTitle} at ${formData.company}`,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location
       });
       toast.success('Saved to My Resumes!');
     } catch (err: any) {

@@ -48,16 +48,19 @@ router.post('/generate-cover-letter', protect, async (req, res) => {
 
 router.post('/save-tailored', protect, async (req, res) => {
   try {
-    const { name, tailoredResume, atsScore, jobTitle, company, keywordsAdded } = req.body;
+    const { name, tailoredResume, atsScore, jobTitle, company, keywordsAdded, coverLetter } = req.body;
+    const { email, phone, location } = req.body;
 
     const resume = await Resume.create({
       user: req.user.id,
       name: name || `Tailored: ${jobTitle} at ${company}`,
-      summary: tailoredResume.substring(0, 500) + '...', // Partial summary from tailored text
+      summary: tailoredResume ? tailoredResume.substring(0, 500) + '...' : '',
+      content: tailoredResume,
+      coverLetter: coverLetter,
       atsScore: atsScore || 0,
       aiOptimized: true,
-      // We can store the full tailored text in a custom field or reuse one
-      headline: `${jobTitle} at ${company}`
+      headline: `${jobTitle} at ${company}`,
+      keywords: keywordsAdded || []
     });
 
     successResponse(res, resume, 'Tailored resume saved successfully');

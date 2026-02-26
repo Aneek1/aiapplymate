@@ -33,6 +33,54 @@ const ApplicationsPage = () => {
     }
   };
 
+  const downloadPDF = async (app: any, type: 'resume' | 'cover-letter') => {
+    try {
+      const payload = type === 'resume'
+        ? {
+          tailoredResume: app.content,
+          name: app.name.split(':')[1]?.split('at')[0]?.trim() || "Applicant",
+          email: app.email || "applicant@example.com",
+          phone: app.phone || "",
+          location: app.location || "",
+          summary: app.summary || "",
+          keywordsAdded: app.keywords || []
+        }
+        : {
+          coverLetter: app.coverLetter,
+          name: app.name.split(':')[1]?.split('at')[0]?.trim() || "Applicant",
+          email: app.email || "applicant@example.com",
+          phone: app.phone || "",
+          company: app.name.split('at')[1]?.trim() || "Company"
+        };
+
+      if (type === 'cover-letter' && !app.coverLetter) {
+        toast.error('No cover letter available for this tailoring');
+        return;
+      }
+
+      if (type === 'resume' && !app.content) {
+        toast.error('Resume content missing for this entry');
+        return;
+      }
+
+      const blob = type === 'resume'
+        ? await resumeAPI.downloadTailoredResume(payload)
+        : await resumeAPI.downloadCoverLetter(payload);
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}-${app.name.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('Failed to download PDF');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -97,9 +145,20 @@ const ApplicationsPage = () => {
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <button className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all">
-                    Download PDF
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => downloadPDF(app, 'resume')}
+                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all"
+                    >
+                      Resume PDF
+                    </button>
+                    <button
+                      onClick={() => downloadPDF(app, 'cover-letter')}
+                      className="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all"
+                    >
+                      Cover Letter
+                    </button>
+                  </div>
                   <button className="text-slate-400 text-xs font-bold flex items-center gap-1 hover:text-emerald-600 transition-all">
                     Details
                     <ChevronRight className="w-3 h-3" />
