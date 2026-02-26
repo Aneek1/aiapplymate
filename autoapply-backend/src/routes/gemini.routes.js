@@ -75,9 +75,12 @@ router.post('/download-tailored-resume', async (req, res) => {
     const html = pdfService.generateResumeHTML({ tailoredResume, name, email, phone, location, summary, keywordsAdded });
     const pdfBuffer = await pdfService.generatePDF(html);
 
-    res.setHeader('Content-Type', 'application/pdf');
+    console.log(`PDF Generated: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
+
+    res.contentType('application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=tailored-resume.pdf`);
-    res.send(pdfBuffer);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.end(Buffer.from(pdfBuffer), 'binary');
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -89,9 +92,12 @@ router.post('/download-cover-letter', async (req, res) => {
     const html = pdfService.generateCoverLetterHTML({ coverLetter, name, email, phone, company });
     const pdfBuffer = await pdfService.generatePDF(html);
 
-    res.setHeader('Content-Type', 'application/pdf');
+    console.log(`Cover Letter Generated: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
+
+    res.contentType('application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=cover-letter.pdf`);
-    res.send(pdfBuffer);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.end(Buffer.from(pdfBuffer), 'binary');
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

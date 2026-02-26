@@ -68,15 +68,19 @@ const ApplicationsPage = () => {
         return;
       }
 
-      const blob = type === 'resume'
+      const rawBlob = type === 'resume'
         ? await resumeAPI.downloadTailoredResume(payload)
         : await resumeAPI.downloadCoverLetter(payload);
 
       // Verify the blob is actually a PDF or at least has content
-      if (blob.size < 100) {
+      console.log(`Blob received. Size: ${rawBlob.size}, Type: ${rawBlob.type}`);
+
+      if (rawBlob.size < 100) {
         throw new Error('Received an invalid or empty file from the server');
       }
 
+      // Explicitly set the type to application/pdf to ensure browser treats it correctly
+      const blob = new Blob([rawBlob], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
