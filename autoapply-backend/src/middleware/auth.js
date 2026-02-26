@@ -1,21 +1,22 @@
 const jwt = require('jsonwebtoken');
+const { errorResponse } = require('../utils/response');
 
-module.exports = (req, res, next) => {
+exports.protect = (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+    const authHeader = req.header('Authorization');
+    const token = authHeader?.startsWith('Bearer ')
+      ? authHeader.replace('Bearer ', '')
+      : null;
+
     if (!token) {
-      // For testing, create a test user if no token
-      req.user = { id: 'test-user-123', email: 'test@example.com' };
-      return next();
+      return errorResponse(res, 'Not authorized, no token provided', 401);
     }
-    
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    // For testing, allow test user even with invalid token
-    req.user = { id: 'test-user-123', email: 'test@example.com' };
-    next();
+    console.error('Auth Error:', error.message);
+    return errorResponse(res, 'Not authorized, token failed', 401);
   }
 };

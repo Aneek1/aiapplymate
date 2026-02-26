@@ -1,46 +1,184 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+const { User } = require('../models');
+const { generateToken } = require('../utils/jwt');
+const { successResponse, errorResponse } = require('../utils/response');
+const { protect } = require('../middleware/auth');
+const {
+  registerValidator,
+  loginValidator,
+  handleValidationErrors,
+} = require('../middleware/validator');
 
-router.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Auth route working' });
-});
+// @route   POST /api/auth/register
+// @desc    Register new user
+// @access  Public
+router.post('/register', registerValidator, handleValidationErrors, async (req, res, next) => {
+  try {
+    const { email, password, firstName, lastName, phone } = req.body;
 
-router.post('/register', (req, res) => {
-  const token = jwt.sign(
-    { id: 'test-user-123', email: req.body.email || 'test@example.com' },
-    process.env.JWT_SECRET || 'test-secret',
-    { expiresIn: '7d' }
-  );
-  res.json({
-    success: true,
-    data: {
-      user: { id: 'test-user-123', email: req.body.email || 'test@example.com' },
-      token
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return errorResponse(res, 'User already exists with this email', 400);
     }
-  });
+
+    // Create new user
+    const user = await User.create({
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+    });
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Return user data (without password)
+    successResponse(
+      res,
+      {
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          subscription: user.subscription,
+        },
+        token,
+      },
+      'User registered successfully',
+      201
+    );
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post('/login', (req, res) => {
-  const token = jwt.sign(
-    { id: 'test-user-123', email: req.body.email || 'test@example.com' },
-    process.env.JWT_SECRET || 'test-secret',
-    { expiresIn: '7d' }
-  );
-  res.json({
-    success: true,
-    data: {
-      user: { id: 'test-user-123', email: req.body.email || 'test@example.com' },
-      token
+// @route   POST /api/auth/login
+// @desc    Login user
+// @access  Public
+router.post('/login', loginValidator, handleValidationErrors, async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user with password
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return errorResponse(res, 'Invalid credentials', 401);
     }
-  });
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return errorResponse(res, 'Invalid credentials', 401);
+    }
+
+    // Update last login
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        subscription: user.subscription,
+        stats: user.stats,
+      },
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/me', (req, res) => {
-  res.json({
-    success: true,
-    data: { id: 'test-user-123', email: 'test@example.com' }
-  });
+// @route   GET /api/auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', protect, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return errorResponse(res, 'User not found', 404);
+    }
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        phone: user.phone,
+        location: user.location,
+        linkedinUrl: user.linkedinUrl,
+        portfolioUrl: user.portfolioUrl,
+        headline: user.headline,
+        summary: user.summary,
+        subscription: user.subscription,
+        stats: user.stats,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   PUT /api/auth/me
+// @desc    Update current user
+// @access  Private
+router.put('/me', protect, async (req, res, next) => {
+  try {
+    const allowedUpdates = [
+      'firstName',
+      'lastName',
+      'phone',
+      'location',
+      'linkedinUrl',
+      'portfolioUrl',
+      'headline',
+      'summary',
+    ];
+
+    const updates = {};
+    Object.keys(req.body).forEach((key) => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    successResponse(res, {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        phone: user.phone,
+        location: user.location,
+        linkedinUrl: user.linkedinUrl,
+        portfolioUrl: user.portfolioUrl,
+        headline: user.headline,
+        summary: user.summary,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

@@ -48,6 +48,7 @@ app.use('/api/resumes', require('./routes/resumes'));
 app.use('/api/applications', require('./routes/applications'));
 app.use('/api/preferences', require('./routes/preferences'));
 app.use('/api/autoapply', require('./routes/autoapply'));
+app.use('/api/gemini', require('./routes/gemini.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -57,9 +58,9 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
-    success: false, 
-    message: err.message || 'Internal Server Error' 
+  res.status(500).json({
+    success: false,
+    message: err.message || 'Internal Server Error'
   });
 });
 

@@ -12,7 +12,7 @@ async function fetchAPI<T>(
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; message?: string; pagination?: any }> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
@@ -83,7 +83,7 @@ export const authAPI = {
 export const userAPI = {
   getStats: () =>
     fetchAPI<UserStats>('/users/stats'),
-  
+
   getActivity: () =>
     fetchAPI<ActivityItem[]>('/users/activity'),
 };
@@ -146,6 +146,50 @@ export const resumeAPI = {
         body: JSON.stringify({ jobTitle, jobDescription }),
       }
     ),
+
+  tailor: (data: { resumeText: string; jobDescription: string; jobTitle: string; company: string }) =>
+    fetchAPI<any>('/gemini/tailor-resume', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  generateCoverLetter: (data: { resumeText: string; jobDescription: string; jobTitle: string; company: string }) =>
+    fetchAPI<any>('/gemini/generate-cover-letter', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  saveTailored: (data: any) =>
+    fetchAPI<any>('/gemini/save-tailored', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  downloadTailoredResume: async (data: any) => {
+    const response = await fetch(`${API_BASE_URL}/gemini/download-tailored-resume`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken() || ''}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Download failed');
+    return response.blob();
+  },
+
+  downloadCoverLetter: async (data: any) => {
+    const response = await fetch(`${API_BASE_URL}/gemini/download-cover-letter`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken() || ''}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Download failed');
+    return response.blob();
+  },
 };
 
 // Application API
@@ -156,7 +200,7 @@ export const applicationAPI = {
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.search) queryParams.append('search', params.search);
-    
+
     return fetchAPI<Application[]>(`/applications?${queryParams.toString()}`);
   },
 
