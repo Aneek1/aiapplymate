@@ -46,6 +46,16 @@ router.post('/generate-cover-letter', protect, async (req, res) => {
   }
 });
 
+router.post('/tailor-full', protect, async (req, res) => {
+  try {
+    const { jobDescription, resumeText, jobTitle, company } = req.body;
+    const result = await geminiService.tailorFull(jobDescription, resumeText, jobTitle, company);
+    successResponse(res, result);
+  } catch (error) {
+    errorResponse(res, error.message, 500);
+  }
+});
+
 router.post('/save-tailored', protect, async (req, res) => {
   try {
     const { name, tailoredResume, atsScore, jobTitle, company, keywordsAdded, coverLetter } = req.body;
@@ -69,13 +79,13 @@ router.post('/save-tailored', protect, async (req, res) => {
   }
 });
 
-router.post('/download-tailored-resume', async (req, res) => {
+router.post('/download-tailored-resume', protect, async (req, res) => {
   try {
     const { message, resumeText, tailoredResume, name, email, phone, location, summary, keywordsAdded } = req.body;
     const html = pdfService.generateResumeHTML({ tailoredResume, name, email, phone, location, summary, keywordsAdded });
     const pdfBuffer = await pdfService.generatePDF(html);
 
-    console.log(`PDF Generated: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
+    console.log(`PDF Generated for User ${req.user.id}: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
 
     res.contentType('application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=tailored-resume.pdf`);
@@ -86,13 +96,13 @@ router.post('/download-tailored-resume', async (req, res) => {
   }
 });
 
-router.post('/download-cover-letter', async (req, res) => {
+router.post('/download-cover-letter', protect, async (req, res) => {
   try {
     const { coverLetter, name, email, phone, company } = req.body;
     const html = pdfService.generateCoverLetterHTML({ coverLetter, name, email, phone, company });
     const pdfBuffer = await pdfService.generatePDF(html);
 
-    console.log(`Cover Letter Generated: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
+    console.log(`Cover Letter Generated for User ${req.user.id}: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
 
     res.contentType('application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=cover-letter.pdf`);

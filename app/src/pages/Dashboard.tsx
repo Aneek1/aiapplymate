@@ -65,26 +65,14 @@ const Dashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Generate Tailored Resume
-      const resumeRes = await resumeAPI.tailor({
+      const response = await resumeAPI.tailorFull({
         resumeText: formData.resumeText,
         jobDescription: formData.jobDescription,
         jobTitle: formData.jobTitle,
         company: formData.company
       });
 
-      // 2. Generate Cover Letter
-      const clRes = await resumeAPI.generateCoverLetter({
-        resumeText: formData.resumeText,
-        jobDescription: formData.jobDescription,
-        jobTitle: formData.jobTitle,
-        company: formData.company
-      });
-
-      setResult({
-        ...resumeRes.data,
-        coverLetter: clRes.data.coverLetter
-      });
+      setResult(response.data);
       setStep(3);
       toast.success('Tailored content generated!');
     } catch (err: any) {

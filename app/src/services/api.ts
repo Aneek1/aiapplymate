@@ -165,6 +165,12 @@ export const resumeAPI = {
       body: JSON.stringify(data),
     }),
 
+  tailorFull: (data: { resumeText: string; jobDescription: string; jobTitle: string; company: string }) =>
+    fetchAPI<any>('/gemini/tailor-full', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   downloadTailoredResume: async (data: any) => {
     const response = await fetch(`${API_BASE_URL}/gemini/download-tailored-resume`, {
       method: 'POST',

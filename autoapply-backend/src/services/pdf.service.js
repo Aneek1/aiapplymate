@@ -23,12 +23,13 @@ class PDFService {
       const pdfBuffer = await page.pdf({
         format: 'A4',
         margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
+          top: '10mm',
+          right: '10mm',
+          bottom: '10mm',
+          left: '10mm'
         },
-        printBackground: true
+        printBackground: true,
+        preferCSSPageSize: true
       });
       return pdfBuffer;
     } catch (error) {
@@ -42,74 +43,118 @@ class PDFService {
   }
 
   generateResumeHTML(data) {
+    // Basic cleaning of tailoredResume to remove redundant header info if AI included it
+    let cleanTailored = data.tailoredResume || '';
+    if (data.name) {
+      const nameRegex = new RegExp(data.name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+      cleanTailored = cleanTailored.replace(nameRegex, '').trim();
+    }
+
     return `
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
         <style>
-          * { box-sizing: border-box; }
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+          
+          * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+          
           body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            line-height: 1.5; 
-            color: #1a202c; 
+            font-family: 'Inter', sans-serif; 
+            line-height: 1.25; 
+            color: #0f172a; 
             margin: 0; 
             padding: 0;
             background: white;
+            font-size: 9.5pt;
           }
-          .page { padding: 0; }
+          
+          .page { 
+            padding: 0;
+            width: 100%;
+          }
+          
           .header { 
-            background-color: #f0fdf4; 
-            border-left: 5px solid #10b981; 
-            padding: 30px; 
-            margin-bottom: 30px;
+            background-color: #f8fafc; 
+            border-bottom: 3px solid #10b981; 
+            padding: 15px 30px; 
+            margin-bottom: 12px;
           }
+          
           .name { 
-            font-size: 32px; 
+            font-size: 24pt; 
             font-weight: 800; 
-            color: #064e3b; 
-            margin: 0 0 10px 0;
-            letter-spacing: -0.025em;
+            color: #0f172a; 
+            margin: 0 0 2px 0;
+            letter-spacing: -0.04em;
+            line-height: 1;
           }
+          
           .contact-info { 
             display: flex; 
             flex-wrap: wrap; 
-            gap: 15px; 
-            font-size: 13px; 
-            color: #4b5563; 
+            gap: 10px; 
+            font-size: 8.5pt; 
+            color: #475569; 
+            font-weight: 500;
           }
+          
           .contact-item { display: flex; align-items: center; }
-          .section { margin: 0 30px 25px 30px; }
+          .contact-item:not(:last-child)::after {
+            content: "|";
+            margin-left: 10px;
+            color: #cbd5e1;
+            font-weight: 300;
+          }
+          
+          .section { margin: 0 30px 10px 30px; }
+          
           .section-title { 
-            font-size: 16px; 
+            font-size: 9pt; 
             font-weight: 700; 
             color: #059669; 
             text-transform: uppercase; 
             letter-spacing: 0.1em; 
-            border-bottom: 2px solid #ecfdf5; 
-            padding-bottom: 6px; 
-            margin-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9; 
+            padding-bottom: 2px; 
+            margin-bottom: 6px;
           }
+          
           .summary-text { 
-            font-size: 14px; 
-            color: #374151; 
-            text-align: justify;
+            font-size: 9.5pt; 
+            color: #334155; 
+            margin-bottom: 0;
           }
+          
           .content-text { 
-            font-size: 14px; 
-            color: #1f2937; 
+            font-size: 9pt; 
+            color: #0f172a; 
             white-space: pre-wrap;
+            margin-top: -2px;
           }
+          
+          .keywords-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 2px;
+          }
+          
           .keywords-tag {
-            display: inline-block;
-            background: #f0fdf4;
-            color: #065f46;
-            padding: 2px 8px;
+            background: #f8fafc;
+            color: #64748b;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 12px;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            border: 1px solid #d1fae5;
+            font-size: 7.5pt;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+          }
+
+          /* Extreme measures for one-page fit */
+          @media print {
+            .page { page-break-after: avoid; }
+            body { -webkit-print-color-adjust: exact; }
           }
         </style>
       </head>
@@ -119,25 +164,25 @@ class PDFService {
             <h1 class="name">${data.name || 'Your Name'}</h1>
             <div class="contact-info">
               <span class="contact-item">${data.email || ''}</span>
-              ${data.phone ? `<span class="contact-item">• ${data.phone}</span>` : ''}
-              ${data.location ? `<span class="contact-item">• ${data.location}</span>` : ''}
+              ${data.phone ? `<span class="contact-item">${data.phone}</span>` : ''}
+              ${data.location ? `<span class="contact-item">${data.location}</span>` : ''}
             </div>
           </header>
 
           <section class="section">
             <h2 class="section-title">Professional Summary</h2>
-            <div class="summary-text">${data.summary || ''}</div>
+            <div class="summary-text">${data.summary || 'Strategic professional focused on career optimization and value creation.'}</div>
           </section>
 
           <section class="section">
-            <h2 class="section-title">Tailored Experience & Skills</h2>
-            <div class="content-text">${data.tailoredResume}</div>
+            <h2 class="section-title">Experience & Highlights</h2>
+            <div class="content-text">${cleanTailored}</div>
           </section>
 
           ${data.keywordsAdded && data.keywordsAdded.length > 0 ? `
-          <section class="section">
-            <h2 class="section-title">Targeted Keywords</h2>
-            <div>
+          <section class="section" style="margin-bottom: 5px;">
+            <h2 class="section-title">Keyword Alignment</h2>
+            <div class="keywords-container">
               ${data.keywordsAdded.map(kw => `<span class="keywords-tag">${kw}</span>`).join('')}
             </div>
           </section>
@@ -157,24 +202,24 @@ class PDFService {
         <style>
           body { 
             font-family: 'Georgia', serif; 
-            line-height: 1.7; 
-            color: #1a202c; 
-            padding: 40px 60px;
+            line-height: 1.6; 
+            color: #0f172a; 
+            padding: 40px 50px;
           }
-          .sender-info { margin-bottom: 40px; border-bottom: 1px solid #e5e7eb; padding-bottom: 20px; }
-          .sender-name { font-size: 24px; font-weight: bold; color: #064e3b; margin: 0; }
-          .sender-contact { font-size: 14px; color: #6b7280; font-family: sans-serif; }
-          .date { margin: 30px 0; color: #4b5563; font-style: italic; }
-          .recipient { margin-bottom: 30px; font-weight: 600; }
-          .content { font-size: 15px; white-space: pre-wrap; text-align: justify; }
-          .closing { margin-top: 50px; }
-          .signature { font-size: 18px; font-weight: 700; color: #064e3b; margin-top: 10px; }
+          .sender-info { margin-bottom: 30px; border-bottom: 2px solid #10b981; padding-bottom: 15px; }
+          .sender-name { font-size: 22pt; font-weight: bold; color: #0f172a; margin: 0; }
+          .sender-contact { font-size: 10pt; color: #64748b; font-family: sans-serif; margin-top: 5px; }
+          .date { margin: 25px 0; color: #475569; font-style: italic; }
+          .recipient { margin-bottom: 25px; font-weight: 600; color: #1e293b; }
+          .content { font-size: 11pt; white-space: pre-wrap; text-align: justify; color: #334155; }
+          .closing { margin-top: 40px; }
+          .signature { font-size: 16pt; font-weight: 700; color: #059669; margin-top: 5px; }
         </style>
       </head>
       <body>
         <div class="sender-info">
           <p class="sender-name">${data.name || 'Your Name'}</p>
-          <p class="sender-contact">${data.email || ''} | ${data.phone || ''}</p>
+          <p class="sender-contact">${data.email || ''} &nbsp;|&nbsp; ${data.phone || ''}</p>
         </div>
         
         <div class="date">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
@@ -184,7 +229,7 @@ class PDFService {
           ${data.company || 'The Company'}
         </div>
         
-        <div class="content">${data.coverLetter}</div>
+        <div class="content">${data.coverLetter || "Dear Hiring Manager, I am very excited to apply for this position..."}</div>
         
         <div class="closing">
           Sincerely,<br>
