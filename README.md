@@ -13,6 +13,30 @@
 
 AIApplyMate is a free, open-source tool that uses **Google Gemini AI** to tailor your resume and generate cover letters for specific job descriptions. Upload or paste your resume, paste the job posting, and get an ATS-optimized resume + cover letter as downloadable PDFs — in under 30 seconds.
 
+## Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="AIApplyMate Demo" width="800" />
+</p>
+
+### Landing Page
+
+<p align="center">
+  <img src="assets/screenshots/000-landing-hero.png" alt="Landing Page" width="800" />
+</p>
+
+### Step 1 — Enter Your Info & Resume
+
+<p align="center">
+  <img src="assets/screenshots/004-dashboard-info-filled.png" alt="Dashboard Step 1" width="800" />
+</p>
+
+### Step 2 — Paste the Job Description
+
+<p align="center">
+  <img src="assets/screenshots/008-dashboard-step2-filled.png" alt="Dashboard Step 2" width="800" />
+</p>
+
 ## Features
 
 - **AI Resume Tailoring** — Rewrites your resume to match any job description
