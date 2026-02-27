@@ -3,63 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* ===== Default: Emerald ===== */
-  :root, .scheme-emerald {
-    --brand-50: 209 248 234;
-    --brand-100: 167 243 215;
-    --brand-200: 110 231 183;
-    --brand-300: 52 211 153;
-    --brand-400: 16 185 129;
-    --brand-500: 5 150 105;
-    --brand-600: 4 120 87;
-    --brand-700: 6 95 70;
-    --brand-hue: 160;
-    --primary: 160 84% 39%;
-    --primary-foreground: 160 84% 98%;
-    --ring: 160 84% 39%;
-  }
-
-  /* ===== Blue / Ocean ===== */
-  .scheme-blue {
-    --brand-hue: 217;
-    --primary: 217 91% 60%;
-    --primary-foreground: 217 91% 98%;
-    --ring: 217 91% 60%;
-  }
-
-  /* ===== Violet ===== */
-  .scheme-violet {
-    --brand-hue: 263;
-    --primary: 263 70% 58%;
-    --primary-foreground: 263 70% 98%;
-    --ring: 263 70% 58%;
-  }
-
-  /* ===== Rose ===== */
-  .scheme-rose {
-    --brand-hue: 350;
-    --primary: 350 89% 60%;
-    --primary-foreground: 350 89% 98%;
-    --ring: 350 89% 60%;
-  }
-
-  /* ===== Amber ===== */
-  .scheme-amber {
-    --brand-hue: 38;
-    --primary: 38 92% 50%;
-    --primary-foreground: 38 92% 8%;
-    --ring: 38 92% 50%;
-  }
-
-  /* ===== Cyan ===== */
-  .scheme-cyan {
-    --brand-hue: 188;
-    --primary: 188 94% 43%;
-    --primary-foreground: 188 94% 98%;
-    --ring: 188 94% 43%;
-  }
-
-  /* ===== Light mode base ===== */
+  /* ===== Light mode base + Default Emerald ===== */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -78,6 +22,53 @@
     --border: 214 20% 90%;
     --input: 214 20% 90%;
     --radius: 0.75rem;
+    --brand-hue: 160;
+    --primary: 160 84% 39%;
+    --primary-foreground: 160 84% 98%;
+    --ring: 160 84% 39%;
+  }
+
+  /* ===== Color Scheme Overrides (use :root.scheme-X for specificity) ===== */
+  :root.scheme-emerald {
+    --brand-hue: 160;
+    --primary: 160 84% 39%;
+    --primary-foreground: 160 84% 98%;
+    --ring: 160 84% 39%;
+  }
+
+  :root.scheme-blue {
+    --brand-hue: 217;
+    --primary: 217 91% 60%;
+    --primary-foreground: 217 91% 98%;
+    --ring: 217 91% 60%;
+  }
+
+  :root.scheme-violet {
+    --brand-hue: 263;
+    --primary: 263 70% 58%;
+    --primary-foreground: 263 70% 98%;
+    --ring: 263 70% 58%;
+  }
+
+  :root.scheme-rose {
+    --brand-hue: 350;
+    --primary: 350 89% 60%;
+    --primary-foreground: 350 89% 98%;
+    --ring: 350 89% 60%;
+  }
+
+  :root.scheme-amber {
+    --brand-hue: 38;
+    --primary: 38 92% 50%;
+    --primary-foreground: 38 92% 8%;
+    --ring: 38 92% 50%;
+  }
+
+  :root.scheme-cyan {
+    --brand-hue: 188;
+    --primary: 188 94% 43%;
+    --primary-foreground: 188 94% 98%;
+    --ring: 188 94% 43%;
   }
 
   /* ===== Dark mode base ===== */
