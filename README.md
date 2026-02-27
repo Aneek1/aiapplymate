@@ -82,7 +82,25 @@ aiapplymate/
 └── README.md
 ```
 
-## Quick Start
+## Quick Start (One Command)
+
+All you need is **Node.js 18+**, **MongoDB**, and a **[free Gemini API key](https://aistudio.google.com/app/apikey)**.
+
+```bash
+git clone https://github.com/Aneek1/aiapplymate.git && cd aiapplymate && bash setup.sh
+```
+
+The setup script will:
+1. Check your Node.js version
+2. Ask for your Gemini API key
+3. Install all dependencies (frontend + backend)
+4. Create the `.env` config file
+5. Offer to start both servers immediately
+
+Then open **http://localhost:5173** and start tailoring.
+
+<details>
+<summary><strong>Manual setup (if you prefer)</strong></summary>
 
 ### Prerequisites
 
@@ -131,6 +149,8 @@ npm run dev
 ```
 
 Open **http://localhost:5173** in your browser.
+
+</details>
 
 ## Environment Variables
 
