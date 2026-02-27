@@ -38,7 +38,7 @@ async function fetchAPI<T>(
     return data;
   } catch (error: any) {
     if (error.message === 'Failed to fetch') {
-      throw new Error('Cannot connect to backend server. Please make sure the backend is running on http://localhost:5000');
+      throw new Error(`Cannot connect to backend server. Please make sure the backend is running on ${API_BASE_URL.replace('/api', '')}`);
     }
     throw error;
   }

@@ -10,13 +10,7 @@ dotenv.config();
 const app = express();
 
 // CORS - Allow frontend to connect
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Middleware
 app.use(express.json());
@@ -25,6 +19,12 @@ app.use(morgan('dev'));
 
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Test user middleware (no auth required in open-source mode)
+app.use((req, res, next) => {
+  req.user = { id: '507f1f77bcf86cd799439011', email: 'test@example.com' };
+  next();
+});
 
 // Database connection
 const connectDB = async () => {

@@ -2,6 +2,11 @@ const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../utils/response');
 
 exports.protect = (req, res, next) => {
+  // If test user middleware already set req.user, skip JWT check (open-source mode)
+  if (req.user) {
+    return next();
+  }
+
   try {
     const authHeader = req.header('Authorization');
     const token = authHeader?.startsWith('Bearer ')
