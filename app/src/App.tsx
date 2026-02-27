@@ -1,37 +1,32 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ResumeManager from './sections/ResumeManager';
-import JobPreferences from './sections/JobPreferences';
 import ApplicationsPage from './pages/Applications';
 import Layout from './components/layout/Layout';
+import Landing from './pages/Landing';
 
-import Login from './pages/Login';
-import Register from './pages/Register';
-
-import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'sonner';
 
 function App() {
   return (
-    <AuthProvider>
+    <ThemeProvider>
       <Toaster position="top-right" richColors />
       <Router>
         <Routes>
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* Landing Page */}
+          <Route path="/" element={<Landing />} />
 
           {/* Main App Routes with Layout */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/app" element={<Layout />}>
+            <Route index element={<Navigate to="/app/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="resume-manager" element={<ResumeManager />} />
-            <Route path="preferences" element={<JobPreferences />} />
             <Route path="applications" element={<ApplicationsPage />} />
           </Route>
         </Routes>
       </Router>
-    </AuthProvider>
+    </ThemeProvider>
   );
 }
 

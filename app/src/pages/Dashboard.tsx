@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   Upload,
   FileText,
@@ -10,135 +10,62 @@ import {
   Loader2,
   ChevronRight,
   ClipboardList,
-  Save
+  Save,
+  X,
+  FileUp,
+  ClipboardPaste
 } from 'lucide-react';
-import { resumeAPI } from '@/services/api';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { useTailoring } from '@/hooks/use-tailoring';
+import { useFileParser } from '@/hooks/use-file-parser';
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    formData,
+    result,
+    step,
+    loading,
+    saving,
+    error,
+    setStep,
+    handleInputChange,
+    updateField,
+    generateTailoredContent,
+    saveResultToLibrary,
+    downloadPDF,
+    reset,
+  } = useTailoring();
 
-  // Form State
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    location: '',
-    jobTitle: '',
-    company: '',
-    resumeText: '',
-    jobDescription: ''
-  });
+  const { parsedFile, parsing, parseError, parseFile, clearFile } = useFileParser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [resumeMode, setResumeMode] = useState<'upload' | 'paste'>('upload');
+  const [dragOver, setDragOver] = useState(false);
 
-  // Pre-fill from user
-  useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        name: user.fullName || prev.name,
-        email: user.email || prev.email,
-        phone: user.phone || prev.phone,
-        location: user.location ? `${user.location.city}, ${user.location.state}` : prev.location,
-      }));
-    }
-  }, [user]);
-
-  // Result State
-  const [result, setResult] = useState<{
-    tailoredResume: string;
-    atsScore: number;
-    topChanges: string[];
-    keywordsAdded: string[];
-    coverLetter?: string;
-  } | null>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const generateTailoredContent = async () => {
-    setLoading(true);
-    setError(null);
+  const handleFileSelect = useCallback(async (file: File) => {
     try {
-      const response = await resumeAPI.tailorFull({
-        resumeText: formData.resumeText,
-        jobDescription: formData.jobDescription,
-        jobTitle: formData.jobTitle,
-        company: formData.company
-      });
-
-      setResult(response.data);
-      setStep(3);
-      toast.success('Tailored content generated!');
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate tailored content. Please check your API connection.');
-      toast.error('Generation failed');
-    } finally {
-      setLoading(false);
+      const text = await parseFile(file);
+      updateField('resumeText', text);
+    } catch {
+      // error is surfaced via parseError
     }
-  };
+  }, [parseFile, updateField]);
 
-  const saveResultToLibrary = async () => {
-    if (!result) return;
-    setSaving(true);
-    try {
-      await resumeAPI.saveTailored({
-        ...result,
-        coverLetter: result?.coverLetter,
-        jobTitle: formData.jobTitle,
-        company: formData.company,
-        name: `Tailored: ${formData.jobTitle} at ${formData.company}`,
-        email: formData.email,
-        phone: formData.phone,
-        location: formData.location
-      });
-      toast.success('Saved to My Resumes!');
-    } catch (err: any) {
-      toast.error('Failed to save result');
-    } finally {
-      setSaving(false);
-    }
-  };
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  }, [handleFileSelect]);
 
-  const downloadPDF = async (type: 'resume' | 'cover-letter') => {
-    try {
-      const payload = type === 'resume'
-        ? {
-          tailoredResume: result?.tailoredResume,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          location: formData.location,
-          summary: "Tailored summary based on AI optimization",
-          keywordsAdded: result?.keywordsAdded
-        }
-        : {
-          coverLetter: result?.coverLetter,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company
-        };
+  const handleRemoveFile = useCallback(() => {
+    clearFile();
+    updateField('resumeText', '');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [clearFile, updateField]);
 
-      const blob = type === 'resume'
-        ? await resumeAPI.downloadTailoredResume(payload)
-        : await resumeAPI.downloadCoverLetter(payload);
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${type}-${formData.company || 'tailored'}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      toast.error('Failed to download PDF');
-    }
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -226,21 +153,136 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <Upload className="text-emerald-600" />
-              Existing Resume
+              Your Resume
             </h2>
-            <div className="space-y-4">
-              <p className="text-slate-500 text-sm">Paste your current resume content below to get started.</p>
-              <textarea
-                name="resumeText"
-                value={formData.resumeText}
-                onChange={handleInputChange}
-                rows={10}
-                placeholder="Experience: Senior Software Engineer at Apple..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-              />
+
+            {/* Mode Toggle */}
+            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
+              <button
+                onClick={() => setResumeMode('upload')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                  resumeMode === 'upload'
+                    ? 'bg-white text-emerald-700 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <FileUp className="w-4 h-4" />
+                Upload File
+              </button>
+              <button
+                onClick={() => setResumeMode('paste')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                  resumeMode === 'paste'
+                    ? 'bg-white text-emerald-700 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <ClipboardPaste className="w-4 h-4" />
+                Paste Text
+              </button>
             </div>
+
+            {resumeMode === 'upload' ? (
+              <div className="space-y-4">
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.docx,.txt"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileSelect(file);
+                  }}
+                />
+
+                {!parsedFile ? (
+                  /* Drop Zone */
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-200 ${
+                      dragOver
+                        ? 'border-emerald-500 bg-emerald-50'
+                        : 'border-slate-300 hover:border-emerald-400 hover:bg-slate-50'
+                    }`}
+                  >
+                    {parsing ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
+                        <p className="text-slate-600 font-semibold">Parsing your resume...</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                          <FileUp className="w-7 h-7 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-slate-900 font-bold text-lg">Drop your resume here or click to browse</p>
+                          <p className="text-slate-500 text-sm mt-1">Supports PDF, DOCX, and TXT files</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* File Uploaded State */
+                  <div className="border border-emerald-200 bg-emerald-50 rounded-2xl p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{parsedFile.fileName}</p>
+                          <p className="text-xs text-slate-500">{formatFileSize(parsedFile.fileSize)} &middot; {formData.resumeText.split(/\s+/).length} words extracted</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleRemoveFile}
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        title="Remove file"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="bg-white border border-emerald-100 rounded-xl p-4 max-h-40 overflow-y-auto">
+                      <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">{formData.resumeText.slice(0, 800)}{formData.resumeText.length > 800 ? '...' : ''}</p>
+                    </div>
+                  </div>
+                )}
+
+                {parseError && (
+                  <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-red-700">{parseError}</p>
+                      <button
+                        onClick={() => setResumeMode('paste')}
+                        className="text-sm text-red-600 underline mt-1 hover:text-red-700"
+                      >
+                        Switch to paste mode instead
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-slate-500 text-sm">Paste your current resume content below.</p>
+                <textarea
+                  name="resumeText"
+                  value={formData.resumeText}
+                  onChange={handleInputChange}
+                  rows={10}
+                  placeholder="Experience: Senior Software Engineer at Apple..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
+            )}
 
             <div className="mt-10 flex justify-end">
               <button
@@ -396,7 +438,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex justify-center pt-4">
                   <button
-                    onClick={() => setStep(1)}
+                    onClick={reset}
                     className="text-emerald-600 font-bold flex items-center gap-1 hover:gap-2 transition-all"
                   >
                     Start New Tailoring

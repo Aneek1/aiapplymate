@@ -1,34 +1,23 @@
 import React from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
   Zap,
   Menu,
   X,
-  LogOut,
-  User as UserIcon
+  Home
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
 
 const Layout = () => {
-  const { user, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navigation = [
-    { name: 'Tailor Workspace', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'My Resumes', href: '/resume-manager', icon: FileText },
-    { name: 'Applications', href: '/applications', icon: Zap },
+    { name: 'Tailor Workspace', href: '/app/dashboard', icon: LayoutDashboard },
+    { name: 'My Resumes', href: '/app/resume-manager', icon: FileText },
+    { name: 'Applications', href: '/app/applications', icon: Zap },
   ];
-
-  const handleLogout = () => {
-    logout();
-    toast.info('Logged out successfully');
-    navigate('/login');
-  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -39,11 +28,11 @@ const Layout = () => {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center flex-1">
-              <Link to="/dashboard" className="flex items-center gap-2 flex-shrink-0">
+              <Link to="/" className="flex items-center gap-2 flex-shrink-0">
                 <div className="bg-emerald-600 p-1.5 rounded-lg">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-extrabold tracking-tight text-slate-900">Tailor<span className="text-emerald-600">CV</span></span>
+                <span className="text-xl font-extrabold tracking-tight text-slate-900">AI<span className="text-emerald-600">ApplyMate</span></span>
               </Link>
 
               {/* Desktop Navigation */}
@@ -67,26 +56,15 @@ const Layout = () => {
               </div>
             </div>
 
-            {/* Desktop User Menu */}
+            {/* Desktop - Back to Home */}
             <div className="hidden md:flex items-center gap-4">
-              {user && (
-                <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs ring-2 ring-emerald-50">
-                    {user.firstName?.[0]}{user.lastName?.[0]}
-                  </div>
-                  <div className="text-sm">
-                    <p className="font-bold text-slate-900 leading-none">{user.fullName}</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">{user.subscription?.plan} Account</p>
-                  </div>
-                </div>
-              )}
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors text-sm font-bold"
+              <Link
+                to="/"
+                className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors text-sm font-bold"
               >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -129,24 +107,14 @@ const Layout = () => {
             </div>
 
             <div className="pt-4 border-t border-slate-100">
-              {user && (
-                <div className="flex items-center gap-3 px-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">
-                    {user.firstName?.[0]}{user.lastName?.[0]}
-                  </div>
-                  <div>
-                    <p className="font-bold text-slate-900">{user.fullName}</p>
-                    <p className="text-xs text-slate-500">{user.email}</p>
-                  </div>
-                </div>
-              )}
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 text-red-500 bg-red-50 hover:bg-red-100 px-4 py-3 rounded-xl transition-colors text-sm font-bold"
+              <Link
+                to="/"
+                className="w-full flex items-center gap-2 text-slate-500 hover:text-emerald-600 px-4 py-3 rounded-xl transition-colors text-sm font-bold"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
+                <Home className="w-4 h-4" />
+                Back to Home
+              </Link>
             </div>
           </div>
         )}

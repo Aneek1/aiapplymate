@@ -1,5 +1,4 @@
-import React from 'react';
-import { FileText, Upload, Sparkles, ChevronRight } from 'lucide-react';
+import { FileText, Upload, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ResumeManager = () => {
@@ -37,7 +36,7 @@ const ResumeManager = () => {
 
                 <div className="hidden sm:block h-6 w-px bg-slate-200 mx-2" />
 
-                <Link to="/dashboard" className="inline-flex items-center text-emerald-600 font-bold hover:gap-2 transition-all">
+                <Link to="/app/dashboard" className="inline-flex items-center text-emerald-600 font-bold hover:gap-2 transition-all">
                   Tailor for a new job
                   <ChevronRight className="w-4 h-4" />
                 </Link>

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Building2,
   Calendar,
@@ -8,105 +7,10 @@ import {
   Loader2,
   AlertCircle
 } from 'lucide-react';
-import { resumeAPI } from '@/services/api';
-import { toast } from 'sonner';
+import { useResumeLibrary } from '@/hooks/use-resume-library';
 
 const ApplicationsPage = () => {
-  const [applications, setApplications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchApplications();
-  }, []);
-
-  const fetchApplications = async () => {
-    setLoading(true);
-    try {
-      const response = await resumeAPI.getAll();
-      setApplications(response.data || []);
-    } catch (err: any) {
-      setError('Failed to load application history');
-      toast.error('Error fetching data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const downloadPDF = async (app: any, type: 'resume' | 'cover-letter') => {
-    const downloadKey = `${app._id}-${type}`;
-    if (downloadingId === downloadKey) return;
-
-    setDownloadingId(downloadKey);
-    try {
-      const payload = type === 'resume'
-        ? {
-          tailoredResume: app.content,
-          name: app.name.split(':')[1]?.split('at')[0]?.trim() || "Applicant",
-          email: app.email || "applicant@example.com",
-          phone: app.phone || "",
-          location: app.location || "",
-          summary: app.summary || "",
-          keywordsAdded: app.keywords || []
-        }
-        : {
-          coverLetter: app.coverLetter,
-          name: app.name.split(':')[1]?.split('at')[0]?.trim() || "Applicant",
-          email: app.email || "applicant@example.com",
-          phone: app.phone || "",
-          company: app.name.split('at')[1]?.trim() || "Company"
-        };
-
-      if (type === 'cover-letter' && !app.coverLetter) {
-        toast.error('No cover letter available for this tailoring');
-        return;
-      }
-
-      if (type === 'resume' && !app.content) {
-        toast.error('Resume content missing for this entry');
-        return;
-      }
-
-      const rawBlob = type === 'resume'
-        ? await resumeAPI.downloadTailoredResume(payload)
-        : await resumeAPI.downloadCoverLetter(payload);
-
-      // Verify the blob is actually a PDF or at least has content
-      console.log(`Blob received. Size: ${rawBlob.size}, Type: ${rawBlob.type}`);
-
-      if (rawBlob.size < 100) {
-        throw new Error('Received an invalid or empty file from the server');
-      }
-
-      // Explicitly set the type to application/pdf to ensure browser treats it correctly
-      const blob = new Blob([rawBlob], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-
-      // Clean filename
-      const safeName = app.name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      link.setAttribute('download', `${type}-${safeName}.pdf`);
-
-      document.body.appendChild(link);
-      link.click();
-
-      // Delay removal and revocation to ensure the browser captures the download
-      // Mac/Chrome sometimes need a larger window for the intent
-      setTimeout(() => {
-        link.remove();
-        window.URL.revokeObjectURL(url);
-      }, 5000);
-
-      toast.success(`${type === 'resume' ? 'Resume' : 'Cover Letter'} download started! Check your downloads.`);
-    } catch (err) {
-      console.error('Download error:', err);
-      toast.error('Failed to download PDF. Please try again.');
-    } finally {
-      setDownloadingId(null);
-    }
-  };
+  const { applications, loading, error, downloadingId, downloadPDF } = useResumeLibrary();
 
   if (loading) {
     return (

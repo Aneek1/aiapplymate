@@ -1,7 +1,6 @@
 
-# secrets
-.env
-.env.*
+# dependencies
+node_modules/
 
 # secrets
 .env
@@ -9,3 +8,10 @@
 
 # macOS
 .DS_Store
+
+# build output
+dist/
+build/
+
+# logs
+*.log
