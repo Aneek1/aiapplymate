@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* ===== Light mode base + Default Emerald ===== */
+  /* ===== Light mode base ===== */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -28,49 +28,6 @@
     --ring: 160 84% 39%;
   }
 
-  /* ===== Color Scheme Overrides (use :root.scheme-X for specificity) ===== */
-  :root.scheme-emerald {
-    --brand-hue: 160;
-    --primary: 160 84% 39%;
-    --primary-foreground: 160 84% 98%;
-    --ring: 160 84% 39%;
-  }
-
-  :root.scheme-blue {
-    --brand-hue: 217;
-    --primary: 217 91% 60%;
-    --primary-foreground: 217 91% 98%;
-    --ring: 217 91% 60%;
-  }
-
-  :root.scheme-violet {
-    --brand-hue: 263;
-    --primary: 263 70% 58%;
-    --primary-foreground: 263 70% 98%;
-    --ring: 263 70% 58%;
-  }
-
-  :root.scheme-rose {
-    --brand-hue: 350;
-    --primary: 350 89% 60%;
-    --primary-foreground: 350 89% 98%;
-    --ring: 350 89% 60%;
-  }
-
-  :root.scheme-amber {
-    --brand-hue: 38;
-    --primary: 38 92% 50%;
-    --primary-foreground: 38 92% 8%;
-    --ring: 38 92% 50%;
-  }
-
-  :root.scheme-cyan {
-    --brand-hue: 188;
-    --primary: 188 94% 43%;
-    --primary-foreground: 188 94% 98%;
-    --ring: 188 94% 43%;
-  }
-
   /* ===== Dark mode base ===== */
   .dark {
     --background: 222 47% 6%;
@@ -90,6 +47,50 @@
     --border: 217 19% 18%;
     --input: 217 19% 18%;
   }
+}
+
+/* ===== Color Scheme Overrides =====
+   MUST be outside @layer base so they override the defaults above */
+html.scheme-emerald {
+  --brand-hue: 160;
+  --primary: 160 84% 39%;
+  --primary-foreground: 160 84% 98%;
+  --ring: 160 84% 39%;
+}
+
+html.scheme-blue {
+  --brand-hue: 217;
+  --primary: 217 91% 60%;
+  --primary-foreground: 217 91% 98%;
+  --ring: 217 91% 60%;
+}
+
+html.scheme-violet {
+  --brand-hue: 263;
+  --primary: 263 70% 58%;
+  --primary-foreground: 263 70% 98%;
+  --ring: 263 70% 58%;
+}
+
+html.scheme-rose {
+  --brand-hue: 350;
+  --primary: 350 89% 60%;
+  --primary-foreground: 350 89% 98%;
+  --ring: 350 89% 60%;
+}
+
+html.scheme-amber {
+  --brand-hue: 38;
+  --primary: 38 92% 50%;
+  --primary-foreground: 38 92% 8%;
+  --ring: 38 92% 50%;
+}
+
+html.scheme-cyan {
+  --brand-hue: 188;
+  --primary: 188 94% 43%;
+  --primary-foreground: 188 94% 98%;
+  --ring: 188 94% 43%;
 }
 
 body {
