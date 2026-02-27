@@ -33,7 +33,7 @@ interface UseTailoringReturn {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   generateTailoredContent: () => Promise<void>;
   saveResultToLibrary: () => Promise<void>;
-  downloadPDF: (type: 'resume' | 'cover-letter') => Promise<void>;
+  downloadPDF: (type: 'resume' | 'cover-letter', cvTemplate?: any) => Promise<void>;
   reset: () => void;
 }
 
@@ -114,7 +114,7 @@ export function useTailoring(): UseTailoringReturn {
   }, [result, formData]);
 
   const downloadPDF = useCallback(
-    async (type: 'resume' | 'cover-letter') => {
+    async (type: 'resume' | 'cover-letter', cvTemplate?: any) => {
       if (!result) return;
       try {
         const payload =
@@ -128,6 +128,14 @@ export function useTailoring(): UseTailoringReturn {
                 jobTitle: formData.jobTitle,
                 summary: 'Tailored summary based on AI optimization',
                 keywordsAdded: result.keywordsAdded,
+                template: cvTemplate || {
+                  layout: 'modern',
+                  columns: 'two',
+                  headerStyle: 'centered',
+                  colorScheme: 'blue',
+                  fontSize: 'medium',
+                  spacing: 'normal'
+                }
               }
             : {
                 coverLetter: result.coverLetter,
@@ -160,7 +168,7 @@ export function useTailoring(): UseTailoringReturn {
         toast.error('Failed to download PDF');
       }
     },
-    [result, formData]
+    [result, formData, cvTemplate]
   );
 
   const reset = useCallback(() => {

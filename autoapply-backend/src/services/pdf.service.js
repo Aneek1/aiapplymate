@@ -50,6 +50,27 @@ class PDFService {
       cleanTailored = cleanTailored.replace(nameRegex, '').trim();
     }
 
+    // Template configuration
+    const template = data.template || {
+      layout: 'modern',
+      columns: 'two',
+      headerStyle: 'centered',
+      colorScheme: 'blue',
+      fontSize: 'medium',
+      spacing: 'normal'
+    };
+
+    const colorSchemes = {
+      blue: { primary: '#3b82f6', secondary: '#1e40af', accent: '#dbeafe' },
+      green: { primary: '#10b981', secondary: '#047857', accent: '#d1fae5' },
+      purple: { primary: '#8b5cf6', secondary: '#6d28d9', accent: '#ede9fe' },
+      gray: { primary: '#6b7280', secondary: '#374151', accent: '#f3f4f6' }
+    };
+
+    const fontSizeMap = { small: '9pt', medium: '10pt', large: '11pt' };
+    const spacingMap = { compact: '20px', normal: '25px', relaxed: '30px' };
+    const colors = colorSchemes[template.colorScheme];
+
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -76,30 +97,30 @@ class PDFService {
           }
           
           .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
+            text-align: ${template.headerStyle === 'centered' ? 'center' : template.headerStyle === 'left' ? 'left' : 'left'};
+            margin-bottom: ${spacingMap[template.spacing]};
+            padding-bottom: ${template.headerStyle === 'compact' ? '10px' : '20px'};
+            border-bottom: ${template.headerStyle === 'compact' ? '1px' : '2px'} solid ${colors.accent};
           }
           
           .name { 
-            font-size: 28pt; 
+            font-size: ${template.headerStyle === 'compact' ? '24pt' : '28pt'}; 
             font-weight: 800; 
             color: #0f172a; 
-            margin: 0 0 8px 0;
+            margin: 0 0 ${template.headerStyle === 'compact' ? '4px' : '8px'} 0;
             letter-spacing: -0.02em;
           }
           
           .title {
-            font-size: 14pt;
+            font-size: ${template.headerStyle === 'compact' ? '12pt' : '14pt'};
             font-weight: 600;
             color: #64748b;
-            margin: 0 0 15px 0;
+            margin: 0 0 ${template.headerStyle === 'compact' ? '8px' : '15px'} 0;
           }
           
           .contact-info { 
             display: flex; 
-            justify-content: center;
+            justify-content: ${template.headerStyle === 'centered' ? 'center' : 'flex-start'};
             flex-wrap: wrap; 
             gap: 20px; 
             font-size: 9pt; 
@@ -113,8 +134,8 @@ class PDFService {
           }
           
           .main-content {
-            display: flex;
-            gap: 40px;
+            display: ${template.columns === 'two' ? 'flex' : 'block'};
+            gap: ${template.columns === 'two' ? '40px' : '0'};
           }
           
           .left-column {
@@ -126,7 +147,7 @@ class PDFService {
           }
           
           .section { 
-            margin-bottom: 25px;
+            margin-bottom: ${spacingMap[template.spacing]};
           }
           
           .section-title { 
@@ -135,7 +156,7 @@ class PDFService {
             color: #0f172a; 
             text-transform: uppercase; 
             letter-spacing: 0.05em; 
-            border-bottom: 2px solid #3b82f6; 
+            border-bottom: 2px solid ${colors.primary}; 
             padding-bottom: 4px; 
             margin-bottom: 12px;
           }

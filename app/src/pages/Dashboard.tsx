@@ -13,11 +13,13 @@ import {
   Save,
   X,
   FileUp,
-  ClipboardPaste
+  ClipboardPaste,
+  Settings
 } from 'lucide-react';
 import { useTailoring } from '@/hooks/use-tailoring';
 import { useFileParser } from '@/hooks/use-file-parser';
 import { useTheme } from '@/contexts/ThemeContext';
+import CVLayoutEditor from '@/components/CVLayoutEditor';
 
 const Dashboard = () => {
   const { resolvedMode } = useTheme();
@@ -43,6 +45,8 @@ const Dashboard = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [resumeMode, setResumeMode] = useState<'upload' | 'paste'>('upload');
   const [dragOver, setDragOver] = useState(false);
+  const [showCVEditor, setShowCVEditor] = useState(false);
+  const [cvTemplate, setCvTemplate] = useState<any>(null);
 
   const handleFileSelect = useCallback(async (file: File) => {
     try {
@@ -387,7 +391,14 @@ const Dashboard = () => {
                   Save to Library
                 </button>
                 <button
-                  onClick={() => downloadPDF('resume')}
+                  onClick={() => setShowCVEditor(true)}
+                  className={`border px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${dark ? 'bg-slate-700 text-primary border-slate-600 hover:bg-slate-600' : 'bg-primary/5 text-primary border-primary/20 hover:bg-primary/10'}`}
+                >
+                  <Settings className="w-5 h-5" />
+                  Edit CV Layout
+                </button>
+                <button
+                  onClick={() => downloadPDF('resume', cvTemplate)}
                   className={`border-2 border-primary px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${dark ? 'bg-transparent text-primary hover:bg-primary hover:text-white' : 'bg-white text-primary hover:bg-primary hover:text-white'}`}
                 >
                   <Download className="w-5 h-5" />
@@ -454,6 +465,20 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* CV Layout Editor Modal */}
+      <CVLayoutEditor
+        isOpen={showCVEditor}
+        onClose={() => setShowCVEditor(false)}
+        onSave={(template) => {
+          setCvTemplate(template);
+          // Here you would save the template preference and use it for PDF generation
+          console.log('CV Template saved:', template);
+        }}
+        currentTemplate={cvTemplate}
+        formData={formData}
+        result={result}
+      />
     </div>
   );
 };

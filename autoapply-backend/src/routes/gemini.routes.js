@@ -81,8 +81,18 @@ router.post('/save-tailored', protect, async (req, res) => {
 
 router.post('/download-tailored-resume', protect, async (req, res) => {
   try {
-    const { message, resumeText, tailoredResume, name, email, phone, location, summary, keywordsAdded } = req.body;
-    const html = pdfService.generateResumeHTML({ tailoredResume, name, email, phone, location, summary, keywordsAdded });
+    const { message, resumeText, tailoredResume, name, email, phone, location, jobTitle, summary, keywordsAdded, template } = req.body;
+    const html = pdfService.generateResumeHTML({ 
+      tailoredResume, 
+      name, 
+      email, 
+      phone, 
+      location, 
+      jobTitle,
+      summary, 
+      keywordsAdded,
+      template 
+    });
     const pdfBuffer = await pdfService.generatePDF(html);
 
     console.log(`PDF Generated for User ${req.user.id}: ${pdfBuffer.length} bytes. Header:`, pdfBuffer.slice(0, 10).toString());
