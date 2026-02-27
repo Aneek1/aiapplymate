@@ -1,0 +1,65 @@
+
+> autoapply-backend@1.0.0 start
+> node src/server.js
+
+Server running on port 5002
+API URL: http://localhost:5002/api
+MongoDB Connected
+[0mPOST /api/gemini/tailor-full [33m401[0m 1.949 ms - 63[0m
+[0mPOST /api/auth/login [32m200[0m 252.360 ms - 467[0m
+[0mGET /api/users/stats [36m304[0m 0.388 ms - -[0m
+Gemini TailorFull Error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash
+Please retry in 16.693926284s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.5-flash"},"quotaValue":"20"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"16s"}]
+    at handleResponseNotOk (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:434:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:403:9)
+    at async generateContent (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:867:22)
+    at async GeminiService.tailorFull (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/src/services/gemini/gemini.service.js:112:22)
+    at async /Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/src/routes/gemini.routes.js:52:20 {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '16s'
+    }
+  ]
+}
+Gemini Tailor Error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash
+Please retry in 16.372682907s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.5-flash"},"quotaValue":"20"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"16s"}]
+    at handleResponseNotOk (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:434:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:403:9)
+    at async generateContent (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/node_modules/@google/generative-ai/dist/index.js:867:22)
+    at async GeminiService.tailorResume (/Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/src/services/gemini/gemini.service.js:53:22)
+    at async /Users/aneekchattopadhyay/Desktop/autoapply/autoapply-backend/src/routes/gemini.routes.js:52:20 {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '16s'
+    }
+  ]
+}
+[0mPOST /api/gemini/tailor-full [32m200[0m 974.483 ms - 353[0m
+PDF Generated for User 699fd2a19fd7c91b40a410e2: 82581 bytes. Header: 37,80,68,70,45,49,46,52,10,37
+[0mPOST /api/gemini/download-tailored-resume [32m200[0m 2986.369 ms - 82581[0m
+Cover Letter Generated for User 699fd2a19fd7c91b40a410e2: 66220 bytes. Header: 37,80,68,70,45,49,46,52,10,37
+[0mPOST /api/gemini/download-cover-letter [32m200[0m 2496.734 ms - 66220[0m
+[0mGET /api/auth/me [32m200[0m 4.796 ms - 314[0m
+[0mGET /api/auth/me [36m304[0m 2.336 ms - -[0m
+[0mGET /api/users/stats [36m304[0m 0.171 ms - -[0m
+[0mGET /api/users/stats [36m304[0m 0.171 ms - -[0m

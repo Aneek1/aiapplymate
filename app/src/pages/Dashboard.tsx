@@ -17,8 +17,12 @@ import {
 } from 'lucide-react';
 import { useTailoring } from '@/hooks/use-tailoring';
 import { useFileParser } from '@/hooks/use-file-parser';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Dashboard = () => {
+  const { resolvedMode } = useTheme();
+  const dark = resolvedMode === 'dark';
+
   const {
     formData,
     result,
@@ -72,10 +76,10 @@ const Dashboard = () => {
     <div className="max-w-5xl mx-auto px-4 py-12">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl">
-          Tailor your future in <span className="text-emerald-600">seconds.</span>
+        <h1 className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${dark ? 'text-white' : 'text-slate-900'}`}>
+          Tailor your future in <span className="text-primary">seconds.</span>
         </h1>
-        <p className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
+        <p className={`mt-4 text-xl max-w-2xl mx-auto ${dark ? 'text-slate-400' : 'text-slate-600'}`}>
           Upload your resume and target job description. Our AI will weave them into a perfect match.
         </p>
       </div>
@@ -84,21 +88,21 @@ const Dashboard = () => {
       <div className="flex items-center justify-center mb-12">
         {[1, 2, 3].map((s) => (
           <React.Fragment key={s}>
-            <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${step >= s ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 text-slate-400'
+            <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${step >= s ? 'bg-primary border-primary text-white' : dark ? 'border-slate-600 text-slate-500' : 'border-slate-300 text-slate-400'
               }`}>
               {step > s ? <CheckCircle2 className="w-6 h-6" /> : s}
             </div>
             {s < 3 && (
-              <div className={`w-16 h-1 mx-2 rounded ${step > s ? 'bg-emerald-600' : 'bg-slate-200'}`} />
+              <div className={`w-16 h-1 mx-2 rounded ${step > s ? 'bg-primary' : dark ? 'bg-slate-700' : 'bg-slate-200'}`} />
             )}
           </React.Fragment>
         ))}
       </div>
 
       {/* Workspace Area */}
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[500px]">
+      <div className={`rounded-2xl shadow-xl border overflow-hidden min-h-[500px] ${dark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
         {error && (
-          <div className="bg-red-50 border-b border-red-100 p-4 flex items-center gap-3 text-red-700">
+          <div className={`border-b p-4 flex items-center gap-3 ${dark ? 'bg-red-900/30 border-red-800 text-red-300' : 'bg-red-50 border-red-100 text-red-700'}`}>
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <p className="text-sm font-medium">{error}</p>
           </div>
@@ -106,66 +110,66 @@ const Dashboard = () => {
 
         {step === 1 && (
           <div className="p-8 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
-              <FileText className="text-emerald-600" />
+            <h2 className={`text-2xl font-bold mb-8 flex items-center gap-2 ${dark ? 'text-white' : 'text-slate-900'}`}>
+              <FileText className="text-primary" />
               Your Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Full Name</label>
                 <input
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="John Doe"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Email Address</label>
                 <input
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="john@example.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Phone Number</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Phone Number</label>
                 <input
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Location</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Location</label>
                 <input
                   name="location"
                   value={formData.location}
                   onChange={handleInputChange}
                   placeholder="San Francisco, CA"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Upload className="text-emerald-600" />
+            <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${dark ? 'text-white' : 'text-slate-900'}`}>
+              <Upload className="text-primary" />
               Your Resume
             </h2>
 
             {/* Mode Toggle */}
-            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
+            <div className={`flex gap-1 p-1 rounded-xl mb-6 w-fit ${dark ? 'bg-slate-700' : 'bg-slate-100'}`}>
               <button
                 onClick={() => setResumeMode('upload')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   resumeMode === 'upload'
-                    ? 'bg-white text-emerald-700 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? dark ? 'bg-slate-600 text-primary shadow-sm' : 'bg-white text-primary shadow-sm'
+                    : dark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 <FileUp className="w-4 h-4" />
@@ -175,8 +179,8 @@ const Dashboard = () => {
                 onClick={() => setResumeMode('paste')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   resumeMode === 'paste'
-                    ? 'bg-white text-emerald-700 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? dark ? 'bg-slate-600 text-primary shadow-sm' : 'bg-white text-primary shadow-sm'
+                    : dark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 <ClipboardPaste className="w-4 h-4" />
@@ -207,38 +211,38 @@ const Dashboard = () => {
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-200 ${
                       dragOver
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-slate-300 hover:border-emerald-400 hover:bg-slate-50'
+                        ? 'border-primary bg-primary/10'
+                        : dark ? 'border-slate-600 hover:border-primary hover:bg-slate-700' : 'border-slate-300 hover:border-primary hover:bg-slate-50'
                     }`}
                   >
                     {parsing ? (
                       <div className="flex flex-col items-center gap-3">
-                        <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
-                        <p className="text-slate-600 font-semibold">Parsing your resume...</p>
+                        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                        <p className={`font-semibold ${dark ? 'text-slate-300' : 'text-slate-600'}`}>Parsing your resume...</p>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
-                          <FileUp className="w-7 h-7 text-emerald-600" />
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-primary/15' : 'bg-primary/10'}`}>
+                          <FileUp className="w-7 h-7 text-primary" />
                         </div>
                         <div>
-                          <p className="text-slate-900 font-bold text-lg">Drop your resume here or click to browse</p>
-                          <p className="text-slate-500 text-sm mt-1">Supports PDF, DOCX, and TXT files</p>
+                          <p className={`font-bold text-lg ${dark ? 'text-white' : 'text-slate-900'}`}>Drop your resume here or click to browse</p>
+                          <p className={`text-sm mt-1 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Supports PDF, DOCX, and TXT files</p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
                   /* File Uploaded State */
-                  <div className="border border-emerald-200 bg-emerald-50 rounded-2xl p-5">
+                  <div className={`border rounded-2xl p-5 ${dark ? 'border-primary/30 bg-primary/10' : 'border-primary/30 bg-primary/5'}`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-emerald-600" />
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${dark ? 'bg-primary/20' : 'bg-primary/10'}`}>
+                          <FileText className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-bold text-slate-900 text-sm">{parsedFile.fileName}</p>
-                          <p className="text-xs text-slate-500">{formatFileSize(parsedFile.fileSize)} &middot; {formData.resumeText.split(/\s+/).length} words extracted</p>
+                          <p className={`font-bold text-sm ${dark ? 'text-white' : 'text-slate-900'}`}>{parsedFile.fileName}</p>
+                          <p className={`text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>{formatFileSize(parsedFile.fileSize)} &middot; {formData.resumeText.split(/\s+/).length} words extracted</p>
                         </div>
                       </div>
                       <button
@@ -249,8 +253,8 @@ const Dashboard = () => {
                         <X className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="bg-white border border-emerald-100 rounded-xl p-4 max-h-40 overflow-y-auto">
-                      <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">{formData.resumeText.slice(0, 800)}{formData.resumeText.length > 800 ? '...' : ''}</p>
+                    <div className={`border rounded-xl p-4 max-h-40 overflow-y-auto ${dark ? 'bg-slate-700 border-slate-600' : 'bg-white border-primary/20'}`}>
+                      <p className={`text-xs whitespace-pre-wrap leading-relaxed ${dark ? 'text-slate-300' : 'text-slate-600'}`}>{formData.resumeText.slice(0, 800)}{formData.resumeText.length > 800 ? '...' : ''}</p>
                     </div>
                   </div>
                 )}
@@ -272,14 +276,14 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-slate-500 text-sm">Paste your current resume content below.</p>
+                <p className={`text-sm ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Paste your current resume content below.</p>
                 <textarea
                   name="resumeText"
                   value={formData.resumeText}
                   onChange={handleInputChange}
                   rows={10}
                   placeholder="Experience: Senior Software Engineer at Apple..."
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
             )}
@@ -288,7 +292,7 @@ const Dashboard = () => {
               <button
                 onClick={() => setStep(2)}
                 disabled={!formData.resumeText || !formData.name}
-                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-emerald-200 transition-all flex items-center gap-2 group"
+                className="bg-primary hover:opacity-90 disabled:opacity-50 text-white px-8 py-4 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 group"
               >
                 Next Step
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -299,56 +303,56 @@ const Dashboard = () => {
 
         {step === 2 && (
           <div className="p-8 md:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
-            <h2 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
-              <ClipboardList className="text-emerald-600" />
+            <h2 className={`text-2xl font-bold mb-8 flex items-center gap-2 ${dark ? 'text-white' : 'text-slate-900'}`}>
+              <ClipboardList className="text-primary" />
               Target Opportunity
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Job Title</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Job Title</label>
                 <input
                   name="jobTitle"
                   value={formData.jobTitle}
                   onChange={handleInputChange}
                   placeholder="Product Designer"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Company Name</label>
+                <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Company Name</label>
                 <input
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
                   placeholder="Google"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Job Description</label>
+              <label className={`text-sm font-semibold ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Job Description</label>
               <textarea
                 name="jobDescription"
                 value={formData.jobDescription}
                 onChange={handleInputChange}
                 rows={12}
                 placeholder="Paste the requirements and description from LinkedIn or Indeed..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                className={`w-full px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${dark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-200 text-slate-900'}`}
               />
             </div>
 
             <div className="mt-10 flex justify-between">
               <button
                 onClick={() => setStep(1)}
-                className="text-slate-600 font-semibold px-6 py-4 hover:bg-slate-50 rounded-xl transition-all"
+                className={`font-semibold px-6 py-4 rounded-xl transition-all ${dark ? 'text-slate-400 hover:bg-slate-700' : 'text-slate-600 hover:bg-slate-50'}`}
               >
                 Back
               </button>
               <button
                 onClick={generateTailoredContent}
                 disabled={loading || !formData.jobDescription}
-                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-emerald-200 transition-all flex items-center gap-2 group"
+                className="bg-primary hover:opacity-90 disabled:opacity-50 text-white px-10 py-4 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 group"
               >
                 {loading ? (
                   <>
@@ -368,30 +372,30 @@ const Dashboard = () => {
 
         {step === 3 && result && (
           <div className="p-8 md:p-12 animate-in zoom-in-95 duration-500">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6 bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+            <div className={`flex flex-col md:flex-row items-center justify-between mb-12 gap-6 p-6 rounded-2xl border ${dark ? 'bg-primary/10 border-primary/20' : 'bg-primary/5 border-primary/20'}`}>
               <div>
-                <h2 className="text-3xl font-extrabold text-emerald-900 mb-2">Success!</h2>
-                <p className="text-emerald-700 font-medium">Your resume has been optimized with a <span className="text-emerald-600 font-bold">{result.atsScore}%</span> ATS compatibility score.</p>
+                <h2 className={`text-3xl font-extrabold mb-2 ${dark ? 'text-white' : 'text-slate-900'}`}>Success!</h2>
+                <p className={`font-medium ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Your resume has been optimized with a <span className="text-primary font-bold">{result.atsScore}%</span> ATS compatibility score.</p>
               </div>
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={saveResultToLibrary}
                   disabled={saving}
-                  className="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2"
+                  className={`border px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${dark ? 'bg-slate-700 text-primary border-slate-600 hover:bg-slate-600' : 'bg-primary/5 text-primary border-primary/20 hover:bg-primary/10'}`}
                 >
                   {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   Save to Library
                 </button>
                 <button
                   onClick={() => downloadPDF('resume')}
-                  className="bg-white text-emerald-700 border-2 border-emerald-600 hover:bg-emerald-600 hover:text-white px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2"
+                  className={`border-2 border-primary px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${dark ? 'bg-transparent text-primary hover:bg-primary hover:text-white' : 'bg-white text-primary hover:bg-primary hover:text-white'}`}
                 >
                   <Download className="w-5 h-5" />
                   PDF Resume
                 </button>
                 <button
                   onClick={() => downloadPDF('cover-letter')}
-                  className="bg-emerald-600 text-white hover:bg-emerald-700 px-6 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2"
+                  className="bg-primary text-white hover:opacity-90 px-6 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2"
                 >
                   <Download className="w-5 h-5" />
                   PDF Cover Letter
@@ -401,22 +405,22 @@ const Dashboard = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-6">
-                <h3 className="font-bold text-slate-900 text-xl border-b pb-2">Key AI Optimizations</h3>
+                <h3 className={`font-bold text-xl border-b pb-2 ${dark ? 'text-white border-slate-700' : 'text-slate-900 border-slate-200'}`}>Key AI Optimizations</h3>
                 <ul className="space-y-4">
                   {result.topChanges.map((change, i) => (
-                    <li key={i} className="flex gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100 group">
-                      <div className="bg-emerald-100 text-emerald-600 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <li key={i} className={`flex gap-3 p-4 rounded-xl border group ${dark ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-100'}`}>
+                      <div className="bg-primary/15 text-primary w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-colors">
                         {i + 1}
                       </div>
-                      <p className="text-slate-600 text-sm leading-relaxed">{change}</p>
+                      <p className={`text-sm leading-relaxed ${dark ? 'text-slate-300' : 'text-slate-600'}`}>{change}</p>
                     </li>
                   ))}
                 </ul>
                 <div className="pt-4">
-                  <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Keywords Injected</h4>
+                  <h4 className={`text-sm font-bold uppercase tracking-wider mb-4 ${dark ? 'text-slate-400' : 'text-slate-700'}`}>Keywords Injected</h4>
                   <div className="flex flex-wrap gap-2">
                     {result.keywordsAdded.map((word, i) => (
-                      <span key={i} className="px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-full border border-emerald-100">
+                      <span key={i} className={`px-3 py-1 text-xs font-bold rounded-full border ${dark ? 'bg-primary/10 text-primary border-primary/20' : 'bg-primary/5 text-primary border-primary/20'}`}>
                         {word}
                       </span>
                     ))}
@@ -425,8 +429,8 @@ const Dashboard = () => {
               </div>
 
               <div className="space-y-6">
-                <h3 className="font-bold text-slate-900 text-xl border-b pb-2">Preview</h3>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 h-[400px] overflow-y-auto shadow-inner text-sm font-mono text-slate-600 leading-relaxed">
+                <h3 className={`font-bold text-xl border-b pb-2 ${dark ? 'text-white border-slate-700' : 'text-slate-900 border-slate-200'}`}>Preview</h3>
+                <div className={`border rounded-xl p-6 h-[400px] overflow-y-auto shadow-inner text-sm font-mono leading-relaxed ${dark ? 'bg-slate-700 border-slate-600 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                   <div className="mb-8">
                     <h4 className="font-bold border-b mb-4">Tailored Resume</h4>
                     <p className="whitespace-pre-wrap">{result.tailoredResume}</p>
@@ -439,7 +443,7 @@ const Dashboard = () => {
                 <div className="flex justify-center pt-4">
                   <button
                     onClick={reset}
-                    className="text-emerald-600 font-bold flex items-center gap-1 hover:gap-2 transition-all"
+                    className="text-primary font-bold flex items-center gap-1 hover:gap-2 transition-all"
                   >
                     Start New Tailoring
                     <ArrowRight className="w-4 h-4" />
