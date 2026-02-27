@@ -62,131 +62,262 @@ class PDFService {
           
           body { 
             font-family: 'Inter', sans-serif; 
-            line-height: 1.25; 
-            color: #0f172a; 
+            line-height: 1.4; 
+            color: #1e293b; 
             margin: 0; 
-            padding: 0;
+            padding: 40px;
             background: white;
-            font-size: 9.5pt;
+            font-size: 10pt;
           }
           
-          .page { 
-            padding: 0;
-            width: 100%;
+          .container {
+            max-width: 800px;
+            margin: 0 auto;
           }
           
-          .header { 
-            background-color: #f8fafc; 
-            border-bottom: 3px solid #10b981; 
-            padding: 15px 30px; 
-            margin-bottom: 12px;
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
           }
           
           .name { 
-            font-size: 24pt; 
+            font-size: 28pt; 
             font-weight: 800; 
             color: #0f172a; 
-            margin: 0 0 2px 0;
-            letter-spacing: -0.04em;
-            line-height: 1;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+          }
+          
+          .title {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #64748b;
+            margin: 0 0 15px 0;
           }
           
           .contact-info { 
             display: flex; 
+            justify-content: center;
             flex-wrap: wrap; 
-            gap: 10px; 
-            font-size: 8.5pt; 
-            color: #475569; 
+            gap: 20px; 
+            font-size: 9pt; 
+            color: #64748b; 
+          }
+          
+          .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+          
+          .main-content {
+            display: flex;
+            gap: 40px;
+          }
+          
+          .left-column {
+            flex: 2;
+          }
+          
+          .right-column {
+            flex: 1;
+          }
+          
+          .section { 
+            margin-bottom: 25px;
+          }
+          
+          .section-title { 
+            font-size: 12pt; 
+            font-weight: 700; 
+            color: #0f172a; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            border-bottom: 2px solid #3b82f6; 
+            padding-bottom: 4px; 
+            margin-bottom: 12px;
+          }
+          
+          .experience-item {
+            margin-bottom: 20px;
+          }
+          
+          .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+          }
+          
+          .job-title {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #0f172a;
+          }
+          
+          .job-date {
+            font-size: 9pt;
+            color: #64748b;
             font-weight: 500;
           }
           
-          .contact-item { display: flex; align-items: center; }
-          .contact-item:not(:last-child)::after {
-            content: "|";
-            margin-left: 10px;
-            color: #cbd5e1;
-            font-weight: 300;
+          .company {
+            font-size: 10pt;
+            font-weight: 500;
+            color: #3b82f6;
+            margin-bottom: 8px;
           }
           
-          .section { margin: 0 30px 10px 30px; }
-          
-          .section-title { 
-            font-size: 9pt; 
-            font-weight: 700; 
-            color: #059669; 
-            text-transform: uppercase; 
-            letter-spacing: 0.1em; 
-            border-bottom: 1px solid #f1f5f9; 
-            padding-bottom: 2px; 
-            margin-bottom: 6px;
+          .job-description {
+            font-size: 9.5pt;
+            color: #475569;
+            line-height: 1.5;
+            white-space: pre-wrap;
           }
           
-          .summary-text { 
-            font-size: 9.5pt; 
-            color: #334155; 
-            margin-bottom: 0;
+          .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          }
+          
+          .skill-item {
+            font-size: 9pt;
+            color: #475569;
+            display: flex;
+            align-items: center;
+          }
+          
+          .skill-item::before {
+            content: "•";
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 8px;
+          }
+          
+          .education-item {
+            margin-bottom: 15px;
+          }
+          
+          .degree {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #0f172a;
+          }
+          
+          .school {
+            font-size: 9.5pt;
+            color: #3b82f6;
+            font-weight: 500;
+          }
+          
+          .education-date {
+            font-size: 9pt;
+            color: #64748b;
+          }
+          
+          .summary-text {
+            font-size: 9.5pt;
+            color: #475569;
+            line-height: 1.6;
+            text-align: justify;
           }
           
           .content-text { 
-            font-size: 9pt; 
-            color: #0f172a; 
+            font-size: 9.5pt; 
+            color: #475569; 
             white-space: pre-wrap;
-            margin-top: -2px;
+            line-height: 1.5;
           }
           
           .keywords-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 2px;
+            gap: 6px;
+            margin-top: 10px;
           }
           
           .keywords-tag {
-            background: #f8fafc;
-            color: #64748b;
-            padding: 2px 6px;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 7.5pt;
-            font-weight: 600;
+            font-size: 8pt;
+            font-weight: 500;
             border: 1px solid #e2e8f0;
           }
 
-          /* Extreme measures for one-page fit */
           @media print {
-            .page { page-break-after: avoid; }
             body { -webkit-print-color-adjust: exact; }
+            .section { page-break-inside: avoid; }
           }
         </style>
       </head>
       <body>
-        <div class="page">
+        <div class="container">
           <header class="header">
             <h1 class="name">${data.name || 'Your Name'}</h1>
+            <div class="title">${data.jobTitle || 'Software Engineer'}</div>
             <div class="contact-info">
-              <span class="contact-item">${data.email || ''}</span>
-              ${data.phone ? `<span class="contact-item">${data.phone}</span>` : ''}
-              ${data.location ? `<span class="contact-item">${data.location}</span>` : ''}
+              <div class="contact-item">📧 ${data.email || 'email@example.com'}</div>
+              <div class="contact-item">📱 ${data.phone || '+1 (555) 123-4567'}</div>
+              <div class="contact-item">📍 ${data.location || 'San Francisco, CA'}</div>
             </div>
           </header>
 
-          <section class="section">
-            <h2 class="section-title">Professional Summary</h2>
-            <div class="summary-text">${data.summary || 'Strategic professional focused on career optimization and value creation.'}</div>
-          </section>
+          <div class="main-content">
+            <div class="left-column">
+              <section class="section">
+                <h2 class="section-title">Professional Summary</h2>
+                <div class="summary-text">
+                  ${data.summary || 'Experienced software engineer with a passion for building scalable applications and solving complex problems. Strong background in full-stack development, cloud architecture, and team collaboration.'}
+                </div>
+              </section>
 
-          <section class="section">
-            <h2 class="section-title">Experience & Highlights</h2>
-            <div class="content-text">${cleanTailored}</div>
-          </section>
-
-          ${data.keywordsAdded && data.keywordsAdded.length > 0 ? `
-          <section class="section" style="margin-bottom: 5px;">
-            <h2 class="section-title">Keyword Alignment</h2>
-            <div class="keywords-container">
-              ${data.keywordsAdded.map(kw => `<span class="keywords-tag">${kw}</span>`).join('')}
+              <section class="section">
+                <h2 class="section-title">Experience</h2>
+                <div class="content-text">${cleanTailored}</div>
+              </section>
             </div>
-          </section>
-          ` : ''}
+
+            <div class="right-column">
+              <section class="section">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-grid">
+                  <div class="skill-item">JavaScript</div>
+                  <div class="skill-item">React</div>
+                  <div class="skill-item">Node.js</div>
+                  <div class="skill-item">TypeScript</div>
+                  <div class="skill-item">Python</div>
+                  <div class="skill-item">AWS</div>
+                  <div class="skill-item">Docker</div>
+                  <div class="skill-item">MongoDB</div>
+                  <div class="skill-item">PostgreSQL</div>
+                  <div class="skill-item">Git</div>
+                </div>
+              </section>
+
+              <section class="section">
+                <h2 class="section-title">Education</h2>
+                <div class="education-item">
+                  <div class="degree">Bachelor of Science in Computer Science</div>
+                  <div class="school">University of California, Berkeley</div>
+                  <div class="education-date">2018 - 2022</div>
+                </div>
+              </section>
+
+              ${data.keywordsAdded && data.keywordsAdded.length > 0 ? `
+              <section class="section">
+                <h2 class="section-title">Keywords</h2>
+                <div class="keywords-container">
+                  ${data.keywordsAdded.map(kw => `<span class="keywords-tag">${kw}</span>`).join('')}
+                </div>
+              </section>
+              ` : ''}
+            </div>
+          </div>
         </div>
       </body>
       </html>

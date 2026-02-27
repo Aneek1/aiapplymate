@@ -125,6 +125,7 @@ export function useTailoring(): UseTailoringReturn {
                 email: formData.email,
                 phone: formData.phone,
                 location: formData.location,
+                jobTitle: formData.jobTitle,
                 summary: 'Tailored summary based on AI optimization',
                 keywordsAdded: result.keywordsAdded,
               }
