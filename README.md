@@ -86,8 +86,16 @@ aiapplymate/
 
 All you need is **Node.js 18+**, **MongoDB**, and a **[free Gemini API key](https://aistudio.google.com/app/apikey)**.
 
+**Mac / Linux:**
+
 ```bash
 git clone https://github.com/Aneek1/aiapplymate.git && cd aiapplymate && bash setup.sh
+```
+
+**Windows (Command Prompt or PowerShell):**
+
+```cmd
+git clone https://github.com/Aneek1/aiapplymate.git && cd aiapplymate && setup.bat
 ```
 
 The setup script will:
@@ -98,6 +106,8 @@ The setup script will:
 5. Offer to start both servers immediately
 
 Then open **http://localhost:5173** and start tailoring.
+
+> **Windows users:** If you don't have Git, download it from [git-scm.com](https://git-scm.com/download/win). For MongoDB, the easiest option is [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (free cloud database — no local install needed).
 
 <details>
 <summary><strong>Manual setup (if you prefer)</strong></summary>
