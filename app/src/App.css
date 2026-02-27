@@ -90,6 +90,12 @@ html {
   z-index: -1;
 }
 
+/* Demo progress bar animation */
+@keyframes grow {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 /* Pulse animation for live indicators */
 @keyframes pulse-live {
   0%, 100% {

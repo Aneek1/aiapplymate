@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,8 @@ import {
   Shield,
   Globe,
   MessageCircle,
+  Play,
+  Monitor,
 } from 'lucide-react';
 
 const Landing = () => {
@@ -51,6 +53,28 @@ const Landing = () => {
   }, []);
 
   const isVisible = (id: string) => visibleSections.has(id);
+
+  const [activeDemo, setActiveDemo] = useState(0);
+  const demoInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const demoSlides = [
+    { label: 'Enter Your Info', src: '/demo/dashboard-step1.png', description: 'Fill in your name, email, phone, and location. Upload or paste your resume.' },
+    { label: 'Paste Resume', src: '/demo/dashboard-resume.png', description: 'Paste your current resume text or upload a PDF/DOCX file. The AI needs your experience to work with.' },
+    { label: 'Add Job Description', src: '/demo/dashboard-step2.png', description: 'Enter the target job title, company name, and paste the full job description.' },
+    { label: 'Generate & Download', src: '/demo/dashboard-generate.png', description: 'Hit generate — AI tailors your resume, writes a cover letter, and scores ATS compatibility.' },
+  ];
+
+  const startDemoAutoplay = useCallback(() => {
+    if (demoInterval.current) clearInterval(demoInterval.current);
+    demoInterval.current = setInterval(() => {
+      setActiveDemo((prev) => (prev + 1) % 4);
+    }, 4000);
+  }, []);
+
+  useEffect(() => {
+    startDemoAutoplay();
+    return () => { if (demoInterval.current) clearInterval(demoInterval.current); };
+  }, [startDemoAutoplay]);
 
   const steps = [
     {
@@ -163,6 +187,7 @@ const Landing = () => {
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">How It Works</a>
+              <a href="#demo" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Demo</a>
               <a href="#features" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Features</a>
               <a href="#testimonials" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Testimonials</a>
               <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">FAQ</a>
@@ -322,6 +347,117 @@ const Landing = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo Section */}
+      <section
+        id="demo"
+        ref={(el) => { sectionRefs.current['demo'] = el; }}
+        className="py-24 bg-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`text-center max-w-3xl mx-auto mb-12 transition-all duration-700 ${isVisible('demo') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-full mb-6">
+              <Play className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-700">See It In Action</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+              Watch How It Works
+            </h2>
+            <p className="text-lg text-slate-600">
+              From pasting your resume to downloading a tailored PDF — here's the full flow.
+            </p>
+          </div>
+
+          <div className={`max-w-5xl mx-auto transition-all duration-700 ${isVisible('demo') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            {/* Tab buttons */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {demoSlides.map((slide, i) => (
+                <button
+                  key={slide.label}
+                  onClick={() => { setActiveDemo(i); startDemoAutoplay(); }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    activeDemo === i
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    activeDemo === i ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-500'
+                  }`}>
+                    {i + 1}
+                  </span>
+                  <span className="hidden sm:inline">{slide.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Screenshot display */}
+            <div className="relative bg-slate-900 rounded-2xl p-2 shadow-2xl">
+              {/* Browser chrome */}
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 rounded-t-xl">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                  <div className="w-3 h-3 rounded-full bg-green-400" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <div className="flex items-center gap-2 bg-slate-700 rounded-lg px-4 py-1 text-xs text-slate-400">
+                    <Monitor className="w-3 h-3" />
+                    localhost:5173/app/dashboard
+                  </div>
+                </div>
+              </div>
+
+              {/* Screenshot */}
+              <div className="relative overflow-hidden rounded-b-xl bg-white" style={{ aspectRatio: '16/10' }}>
+                {demoSlides.map((slide, i) => (
+                  <img
+                    key={slide.label}
+                    src={slide.src}
+                    alt={slide.label}
+                    className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-500 ${
+                      activeDemo === i ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Progress bar */}
+              <div className="absolute bottom-0 left-2 right-2 flex gap-1 p-1">
+                {demoSlides.map((_, i) => (
+                  <div key={i} className="flex-1 h-1 rounded-full overflow-hidden bg-slate-700">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        activeDemo === i ? 'bg-emerald-400 animate-[grow_4s_linear]' : i < activeDemo ? 'bg-emerald-400 w-full' : 'bg-transparent w-0'
+                      }`}
+                      style={activeDemo === i ? { animation: 'grow 4s linear forwards' } : i < activeDemo ? { width: '100%' } : { width: '0%' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Caption */}
+            <div className="text-center mt-6">
+              <p className="text-sm font-bold text-slate-900">
+                Step {activeDemo + 1}: {demoSlides[activeDemo].label}
+              </p>
+              <p className="text-sm text-slate-500 mt-1 max-w-lg mx-auto">
+                {demoSlides[activeDemo].description}
+              </p>
+            </div>
+
+            <div className="text-center mt-8">
+              <Link to="/app">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-emerald-100">
+                  Try It Yourself
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
