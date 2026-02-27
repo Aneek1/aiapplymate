@@ -156,6 +156,19 @@ const ThemeCustomizer = () => {
                 })}
               </div>
             </div>
+
+            {/* Apply / Done button */}
+            <button
+              onClick={() => setOpen(false)}
+              className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                resolvedMode === 'dark'
+                  ? 'bg-primary text-white hover:opacity-90'
+                  : 'bg-primary text-white hover:opacity-90'
+              }`}
+            >
+              <Check className="w-4 h-4" />
+              Done
+            </button>
           </div>
         </div>
       )}
