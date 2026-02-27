@@ -168,7 +168,7 @@ const Landing = () => {
               <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">FAQ</a>
             </div>
             <div className="flex items-center gap-3">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-900 transition-colors">
+              <a href="https://github.com/Aneek1/aiapplymate" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-900 transition-colors">
                 <Github className="w-5 h-5" />
               </a>
               <Link to="/app">
@@ -382,7 +382,7 @@ const Landing = () => {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/Aneek1/aiapplymate" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-white text-emerald-700 hover:bg-emerald-50 font-bold rounded-xl px-8 py-4 shadow-lg">
                   <Github className="w-5 h-5 mr-2" />
                   View on GitHub
@@ -515,7 +515,7 @@ const Landing = () => {
               <span className="text-lg font-extrabold text-white">AI<span className="text-emerald-500">ApplyMate</span></span>
             </div>
             <div className="flex items-center gap-6 text-sm">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
+              <a href="https://github.com/Aneek1/aiapplymate" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
                 <Github className="w-4 h-4" />
                 GitHub
               </a>
